@@ -1,8 +1,6 @@
 import random
 
 finished = False
-#player_symbol = 0              # 0 - 0, 1 - X
-starting_player = 0             # 0 - computer starts, 1 - player starts
 board_data = [ [".", ".", "."], [".", ".", "."], [".", ".", "."]]
 
 
@@ -16,7 +14,7 @@ def print_start_menu():
     return player_symbol, computer_symbol
 
 def draw_board(board):
-    row_counter = 0             #TODO Check if row_counter can be replaced by some nicer way of counting items ina list
+    row_counter = 0             #TODO Check if row_counter can be replaced by some nicer way of counting items in a list
     for row in board:
         row_to_print = ""
         
@@ -57,23 +55,37 @@ def make_move(symbol, board, row, field):
 
 def print_move_menu(board):
     is_empty = False
-
+        
     while not is_empty:    
         player_field = input("Input two digits - first for the row (1-3) and second for column (1-3): ")
         print("________________________________________________________________________________________")
-        
-        player_row = int(player_field[0:1])
-        player_column = int(player_field[1:2])
-        
-        if check_if_empty(player_row, player_column, board): is_empty = True
-        else:
-            print("Chosen field is not empty, chose another one")
-            print("________________________________________________________________________________________")
-        
-    return player_row, player_column
+
+        try:
+            player_row = int(player_field[0:1])
+            player_column = int(player_field[1:2])
+                
+            try:
+                if check_if_empty(player_row, player_column, board):
+                    is_empty = True
+                else:
+                    print("Chosen field is not empty, chose another one")
+                    print("________________________________________________________________________________________")
+                    
+            except IndexError:
+                print("Given numbers are out of range")
+                
+        except ValueError:
+            print("Given value is not a number in required range")
+
+                
+    return player_row, player_column       
 
 def print_finish_menu():
     # TODO Display when game finished
+    pass
+
+def check_if_finished(board):
+    
     pass
 
 def move(side):
