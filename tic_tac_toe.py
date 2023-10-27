@@ -65,8 +65,7 @@ def print_move_menu(board):
             player_column = int(player_field[1:2])
                 
             try:
-                if check_if_empty(player_row, player_column, board):
-                    is_empty = True
+                if check_if_empty(player_row, player_column, board): is_empty = True
                 else:
                     print("Chosen field is not empty, chose another one")
                     print("________________________________________________________________________________________")
@@ -80,13 +79,29 @@ def print_move_menu(board):
                 
     return player_row, player_column       
 
-def print_finish_menu():
-    # TODO Display when game finished
-    pass
+def print_finish_menu(board):
+    draw_board(board)
+    print("Game Over")
+    exit()
 
 def check_if_finished(board):
-    
-    pass
+    for i in range(3):
+        result_horizontal = ""
+        result_vertical = ""
+        result_diag_left = ""           # Diagonally from top left to bottom right
+        result_diag_right = ""          # Diagonally from top right to bottom left
+        
+        for j in range(3):
+            result_horizontal = result_horizontal + board[i][j]
+            result_vertical = result_vertical + board[j][i]
+            result_diag_left = result_diag_left + board[j][j]
+            result_diag_right = result_diag_right + board[2-j][j]
+
+            if result_horizontal == "XXX" or result_horizontal == "OOO": print_finish_menu(board)
+            elif result_vertical == "XXX" or result_vertical == "OOO": print_finish_menu(board)
+            elif result_diag_left == "XXX" or result_diag_left == "OOO": print_finish_menu(board)
+            elif result_diag_right == "XXX" or result_diag_right == "OOO": print_finish_menu(board)
+           
 
 def move(side):
     if side == "computer":
