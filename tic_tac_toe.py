@@ -34,10 +34,24 @@ def draw_board(board):
             
         row_counter += 1
 
-def check_if_empty(row, column, board):
-    if board[row - 1][column -1] == ".": is_empty = True
-    else: is_empty = False
-    return is_empty
+def check_if_empty(row, column, board):         #TODO clean this function
+    counter = 0
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == ".": counter += 1            
+
+    if counter > 0: is_any_field_empty = True
+    else: is_any_field_empty = False
+    
+    if is_any_field_empty:
+        if board[row - 1][column -1] == ".":
+            is_empty = True
+        else:
+            is_empty = False
+    else:
+        is_empty = False
+
+    return is_empty, is_any_field_empty
     
 def pick_computer_move(board):
     is_busy = True
@@ -45,9 +59,14 @@ def pick_computer_move(board):
     while is_busy:
         choosen_row = random.randint(1, 3)
         choosen_field = random.randint(1, 3)
-        
-        if check_if_empty(choosen_row, choosen_field, board): is_busy = False
-        else: continue
+
+        chosen_empty, any_empty = check_if_empty(choosen_row, choosen_field, board)
+
+        if not any_empty:
+            print_finish_menu(board, "999", 1, 0)
+        else:
+            if chosen_empty: is_busy = False
+            else: continue
 
     return choosen_row, choosen_field
 
@@ -69,10 +88,14 @@ def print_move_menu(board):
             player_column = int(player_field[1:2])
                 
             try:
-                if check_if_empty(player_row, player_column, board): is_empty = True
+                chosen_empty, any_empty = check_if_empty(player_row, player_column, board)
+                if not any_empty:
+                    print_finish_menu(board, "999", 1, 0)
                 else:
-                    print("Chosen field is not empty, chose another one")
-                    print("________________________________________________________________________________________")
+                    if chosen_empty: is_empty = True
+                    else:
+                        print("Chosen field is not empty, chose another one")
+                        print("________________________________________________________________________________________")
                     
             except IndexError:
                 print("Given numbers are out of range")
@@ -92,6 +115,8 @@ def print_finish_menu(board, result, comp_symbol, player_symbol):
     elif result == "OOO":
         if player_symbol == 0: print("You won, congratulations!")
         else: print("Computer won!")
+    elif result == "999":
+        print("No fields left, draw!")
 
     if_again = int(input("If you want to play again enter 1, otherwise enter 0: "))
     if if_again == 1:
@@ -102,6 +127,7 @@ def print_finish_menu(board, result, comp_symbol, player_symbol):
     return board_clean
 
 def check_if_finished(board, computer_symbol, player_symbol):
+    
     for i in range(3):
         result_horizontal = ""
         result_vertical = ""
@@ -128,10 +154,9 @@ def check_if_finished(board, computer_symbol, player_symbol):
                 board = print_finish_menu(board, result, computer_symbol, player_symbol)
     return board
 
-        #TODO Check if board is full
-
 def move(side):
     if side == "computer":
+        
         computer_row, computer_field = pick_computer_move(board_data)
         make_move(computer_symbol, board_data, computer_row, computer_field)
         board = check_if_finished(board_data, computer_symbol, player_symbol)
