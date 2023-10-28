@@ -13,6 +13,10 @@ def print_start_menu():
     else: computer_symbol = 0
     return player_symbol, computer_symbol
 
+def clean_board(board):
+    board = [ [".", ".", "."], [".", ".", "."], [".", ".", "."]]
+    return board
+
 def draw_board(board):
     row_counter = 0             #TODO Check if row_counter can be replaced by some nicer way of counting items in a list
     for row in board:
@@ -79,12 +83,25 @@ def print_move_menu(board):
                 
     return player_row, player_column       
 
-def print_finish_menu(board):
+def print_finish_menu(board, result, comp_symbol, player_symbol):
     draw_board(board)
-    print("Game Over")
-    exit()
+    
+    if result == "XXX":
+        if player_symbol == 0: print("Computer won!")
+        else: print("You won, congratulations!")
+    elif result == "OOO":
+        if player_symbol == 0: print("You won, congratulations!")
+        else: print("Computer won!")
 
-def check_if_finished(board):
+    if_again = int(input("If you want to play again enter 1, otherwise enter 0: "))
+    if if_again == 1:
+        board_clean = clean_board(board)
+        print_start_menu()
+    else:  exit()
+
+    return board_clean
+
+def check_if_finished(board, computer_symbol, player_symbol):
     for i in range(3):
         result_horizontal = ""
         result_vertical = ""
@@ -97,23 +114,34 @@ def check_if_finished(board):
             result_diag_left = result_diag_left + board[j][j]
             result_diag_right = result_diag_right + board[2-j][j]
 
-            if result_horizontal == "XXX" or result_horizontal == "OOO": print_finish_menu(board)
-            elif result_vertical == "XXX" or result_vertical == "OOO": print_finish_menu(board)
-            elif result_diag_left == "XXX" or result_diag_left == "OOO": print_finish_menu(board)
-            elif result_diag_right == "XXX" or result_diag_right == "OOO": print_finish_menu(board)
-           
+            if result_horizontal == "XXX" or result_horizontal == "OOO":
+                result = result_horizontal
+                board = print_finish_menu(board, result, computer_symbol, player_symbol)
+            elif result_vertical == "XXX" or result_vertical == "OOO":
+                result = result_vertical
+                board = print_finish_menu(board, result, computer_symbol, player_symbol)
+            elif result_diag_left == "XXX" or result_diag_left == "OOO":
+                result = result_diag_left
+                board = print_finish_menu(board, result, computer_symbol, player_symbol)
+            elif result_diag_right == "XXX" or result_diag_right == "OOO":
+                result = result_diag_right
+                board = print_finish_menu(board, result, computer_symbol, player_symbol)
+    return board
+
+        #TODO Check if board is full
 
 def move(side):
     if side == "computer":
         computer_row, computer_field = pick_computer_move(board_data)
         make_move(computer_symbol, board_data, computer_row, computer_field)
-        check_if_finished(board_data)
+        board = check_if_finished(board_data, computer_symbol, player_symbol)
         
     elif side == "player":
         draw_board(board_data)
         player_row, player_column = print_move_menu(board_data)
         make_move(player_symbol, board_data, player_row, player_column)
-        check_if_finished(board_data)
+        board = check_if_finished(board_data, computer_symbol, player_symbol)
+    return board
 
 ##  __main__
 player_symbol, computer_symbol = print_start_menu()
@@ -121,11 +149,11 @@ starting_player = random.randint(0, 1)
 
 while not finished:
     if starting_player == 0:
-        move("computer")
-        move("player")
+        board_data = move("computer")
+        board_data = move("player")
     else:
-        move("player")
-        move("computer")
+        board_data = move("player")
+        board_data = move("computer")
 
 
 
