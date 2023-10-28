@@ -38,6 +38,16 @@ def check_if_empty(row, column, board):
     if board[row - 1][column -1] == ".": is_empty = True
     else: is_empty = False
     return is_empty
+
+def check_field_left(board):
+    counter = 0
+    
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == ".": counter += 1
+
+    if counter == 0: board = print_finish_menu(board, "999", computer_symbol, player_symbol)
+    return board
     
 def pick_computer_move(board):
     is_busy = True
@@ -84,6 +94,7 @@ def print_move_menu(board):
     return player_row, player_column       
 
 def print_finish_menu(board, result, comp_symbol, player_symbol):
+    print("________________________________________________________________________________________")
     draw_board(board)
     
     if result == "XXX":
@@ -92,6 +103,8 @@ def print_finish_menu(board, result, comp_symbol, player_symbol):
     elif result == "OOO":
         if player_symbol == 0: print("You won, congratulations!")
         else: print("Computer won!")
+    elif result == "999":
+        print("Board full, draw")
 
     if_again = int(input("If you want to play again enter 1, otherwise enter 0: "))
     if if_again == 1:
@@ -130,30 +143,33 @@ def check_if_finished(board, computer_symbol, player_symbol):
 
         #TODO Check if board is full
 
-def move(side):
+def move(side, board):
     if side == "computer":
-        computer_row, computer_field = pick_computer_move(board_data)
-        make_move(computer_symbol, board_data, computer_row, computer_field)
-        board = check_if_finished(board_data, computer_symbol, player_symbol)
+        board = check_field_left(board)
+        computer_row, computer_field = pick_computer_move(board)
+        make_move(computer_symbol, board, computer_row, computer_field)
+        board = check_if_finished(board, computer_symbol, player_symbol)
         
     elif side == "player":
         draw_board(board_data)
-        player_row, player_column = print_move_menu(board_data)
-        make_move(player_symbol, board_data, player_row, player_column)
-        board = check_if_finished(board_data, computer_symbol, player_symbol)
+        board = check_field_left(board)
+        player_row, player_column = print_move_menu(board)
+        make_move(player_symbol, board, player_row, player_column)
+        board = check_if_finished(board, computer_symbol, player_symbol)
     return board
 
 ##  __main__
 player_symbol, computer_symbol = print_start_menu()
 starting_player = random.randint(0, 1)
+board_data = clean_board(board_data)
 
 while not finished:
     if starting_player == 0:
-        board_data = move("computer")
-        board_data = move("player")
+        board_data = move("computer", board_data)
+        board_data = move("player", board_data)
     else:
-        board_data = move("player")
-        board_data = move("computer")
+        board_data = move("player", board_data)
+        board_data = move("computer", board_data)
 
 
 
