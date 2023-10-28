@@ -1,5 +1,6 @@
 import random
 
+finished = False
 board_data = [[".", ".", "."], [".", ".", "."], [".", ".", "."]]
 
 
@@ -61,7 +62,7 @@ def check_field_left(board):
                 counter += 1
 
     if counter == 0:
-        board = print_finish_menu(board, "999", computer_symbol, player_symbol)
+        board = print_finish_menu(board, '999', computer_symbol, player_symbol, finished)
     return board
 
 
@@ -131,18 +132,9 @@ def print_finish_menu(board, result, comp_symbol, player_symbol, finished):
     elif result == "999":
         print("Board full, draw")
 
-    if_again = int(input("If you want to play again enter 1, otherwise enter 0: "))
-##    if if_again == 1:
-##        board_clean = clean_board(board)
-##        print_start_menu()
-##    else:
-##        exit()
-    if if_again == 1:
-        finished = True
-    else:
-        exit()
+    finished = True
 
-    return finished
+    return board, finished
 
 
 def check_if_finished(board, computer_symbol, player_symbol, finished):
@@ -191,19 +183,26 @@ def move(side, board, player_symbol, computer_symbol, finished):
 
 #  __main__
 while True:
+    restart = False
+    
     player_symbol, computer_symbol = print_start_menu()
     starting_player = random.randint(0, 1)
     board_data = clean_board(board_data)
-    finished = False
 
-    while not finished:
-        if starting_player == 0:
-            print(f"Player: {player_symbol}")
-            print(f"Computer: {computer_symbol}")
-            board_data, finished = move("computer", board_data, player_symbol, computer_symbol, finished)
-            board_data, finished = move("player", board_data, player_symbol, computer_symbol, finished)
+    while not restart:
+        finished = False
+
+        while not finished:
+            
+            if starting_player == 0:
+                board_data, finished = move("computer", board_data, player_symbol, computer_symbol, finished)
+                board_data, finished = move("player", board_data, player_symbol, computer_symbol, finished)
+            else:
+                board_data, finished = move("player", board_data, player_symbol, computer_symbol, finished)
+                board_data, finished = move("computer", board_data, player_symbol, computer_symbol, finished)
+
+        if_again = int(input("If you want to play again enter 1, otherwise enter 0: "))
+        if if_again == 1:
+            restart = True
         else:
-            print(f"Player: {player_symbol}")
-            print(f"Computer: {computer_symbol}")
-            board_data, finished = move("player", board_data, player_symbol, computer_symbol, finished)
-            board_data, finished = move("computer", board_data, player_symbol, computer_symbol, finished)
+            exit()
