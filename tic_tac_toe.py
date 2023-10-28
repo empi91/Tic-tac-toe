@@ -1,6 +1,5 @@
 import random
 
-finished = False
 board_data = [[".", ".", "."], [".", ".", "."], [".", ".", "."]]
 
 
@@ -10,8 +9,7 @@ def print_start_menu():
     \nRules are simple: \n- game board is 3x3; \n- you can draw X or O in an empty field;\
     \n- Whoever gets three X or O in the row (vertical, horizontal or diagonally) wins\
     \nGood Luck!")
-    player_symbol = int(input("Choose 0 if you want to play with O\
-    or choose 1 if you want to play with X: "))
+    player_symbol = int(input("Choose 0 if you want to play with O or choose 1 if you want to play with X: "))
     print("________________________________________________________________________________________")
     if player_symbol == 0:
         computer_symbol = 1
@@ -116,7 +114,7 @@ def print_move_menu(board):
     return player_row, player_column
 
 
-def print_finish_menu(board, result, comp_symbol, player_symbol):
+def print_finish_menu(board, result, comp_symbol, player_symbol, finished):
     print("________________________________________________________________________________________")
     draw_board(board)
 
@@ -134,16 +132,20 @@ def print_finish_menu(board, result, comp_symbol, player_symbol):
         print("Board full, draw")
 
     if_again = int(input("If you want to play again enter 1, otherwise enter 0: "))
+##    if if_again == 1:
+##        board_clean = clean_board(board)
+##        print_start_menu()
+##    else:
+##        exit()
     if if_again == 1:
-        board_clean = clean_board(board)
-        print_start_menu()
+        finished = True
     else:
         exit()
 
-    return board_clean
+    return finished
 
 
-def check_if_finished(board, computer_symbol, player_symbol):
+def check_if_finished(board, computer_symbol, player_symbol, finished):
     for i in range(3):
         result_horizontal = ""
         result_vertical = ""
@@ -158,44 +160,50 @@ def check_if_finished(board, computer_symbol, player_symbol):
 
             if result_horizontal == "XXX" or result_horizontal == "OOO":
                 result = result_horizontal
-                board = print_finish_menu(board, result, computer_symbol, player_symbol)
+                board, finished = print_finish_menu(board, result, computer_symbol, player_symbol, finished)
             elif result_vertical == "XXX" or result_vertical == "OOO":
                 result = result_vertical
-                board = print_finish_menu(board, result, computer_symbol, player_symbol)
+                board, finished = print_finish_menu(board, result, computer_symbol, player_symbol, finished)
             elif result_diag_left == "XXX" or result_diag_left == "OOO":
                 result = result_diag_left
-                board = print_finish_menu(board, result, computer_symbol, player_symbol)
+                board, finished = print_finish_menu(board, result, computer_symbol, player_symbol, finished)
             elif result_diag_right == "XXX" or result_diag_right == "OOO":
                 result = result_diag_right
-                board = print_finish_menu(board, result, computer_symbol, player_symbol)
-    return board
+                board, finished = print_finish_menu(board, result, computer_symbol, player_symbol, finished)
+    return board, finished
 
 
-def move(side, board, player_symbol, computer_symbol):
+def move(side, board, player_symbol, computer_symbol, finished):
     if side == "computer":
         board = check_field_left(board)
         computer_row, computer_field = pick_computer_move(board)
         make_move(computer_symbol, board, computer_row, computer_field)
-        board = check_if_finished(board, computer_symbol, player_symbol)
+        board, finished = check_if_finished(board, computer_symbol, player_symbol, finished)
 
     elif side == "player":
         draw_board(board_data)
         board = check_field_left(board)
         player_row, player_column = print_move_menu(board)
         make_move(player_symbol, board, player_row, player_column)
-        board = check_if_finished(board, computer_symbol, player_symbol)
-    return board
+        board, finished = check_if_finished(board, computer_symbol, player_symbol, finished)
+    return board, finished
 
 
 #  __main__
-player_symbol, computer_symbol = print_start_menu()
-starting_player = random.randint(0, 1)
-board_data = clean_board(board_data)
+while True:
+    player_symbol, computer_symbol = print_start_menu()
+    starting_player = random.randint(0, 1)
+    board_data = clean_board(board_data)
+    finished = False
 
-while not finished:
-    if starting_player == 0:
-        board_data = move("computer", board_data, player_symbol, computer_symbol)
-        board_data = move("player", board_data, player_symbol, computer_symbol)
-    else:
-        board_data = move("player", board_data, player_symbol, computer_symbol)
-        board_data = move("computer", board_data, player_symbol, computer_symbol)
+    while not finished:
+        if starting_player == 0:
+            print(f"Player: {player_symbol}")
+            print(f"Computer: {computer_symbol}")
+            board_data, finished = move("computer", board_data, player_symbol, computer_symbol, finished)
+            board_data, finished = move("player", board_data, player_symbol, computer_symbol, finished)
+        else:
+            print(f"Player: {player_symbol}")
+            print(f"Computer: {computer_symbol}")
+            board_data, finished = move("player", board_data, player_symbol, computer_symbol, finished)
+            board_data, finished = move("computer", board_data, player_symbol, computer_symbol, finished)
