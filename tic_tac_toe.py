@@ -10,7 +10,16 @@ def print_start_menu():
     \nRules are simple: \n- game board is 3x3; \n- you can draw X or O in an empty field;\
     \n- Whoever gets three X or O in the row (vertical, horizontal or diagonally) wins\
     \nGood Luck!")
-    player_symbol = int(input("Choose 0 if you want to play with O or choose 1 if you want to play with X: "))
+    correct = False
+    while not correct:
+        try:
+            player_symbol = int(input("Choose 0 if you want to play with O or choose 1 if you want to play with X: "))
+            if player_symbol == 1 or player_symbol == 0:
+                correct = True
+            else:
+                print("Wrong number, enter 0 or 1")
+        except ValueError:
+            print("Entered value is not a number, enter 0 or 1")
     print("________________________________________________________________________________________")
     if player_symbol == 0:
         computer_symbol = 1
@@ -154,39 +163,32 @@ def check_if_finished(board, computer_symbol, player_symbol, finished):
             result_diag_right += board[j][2-j]
 
         if result_horizontal == "XXX" or result_horizontal == "OOO":
-            result = result_horizontal
             finished = print_finish_menu(board, result_horizontal, computer_symbol, player_symbol, finished)
             break
         elif result_vertical == "XXX" or result_vertical == "OOO":
-            result = result_vertical
             finished = print_finish_menu(board, result_vertical, computer_symbol, player_symbol, finished)
             break
         elif result_diag_left == "XXX" or result_diag_left == "OOO":
-            result = result_diag_left
             finished = print_finish_menu(board, result_diag_left, computer_symbol, player_symbol, finished)
             break
         elif result_diag_right == "XXX" or result_diag_right == "OOO":
-            result = result_diag_right
             finished = print_finish_menu(board, result_diag_right, computer_symbol, player_symbol, finished)
             break
 
     return finished
 
+
 def move(side, board, player_symbol, computer_symbol, finished):
     is_board_full = check_field_left(board)
     if is_board_full:
-        print("Board full")
         finished = True
     else:
-        print("Board not full")
         if side == "computer":
-            print("Computer move")
             computer_row, computer_field = pick_computer_move(board)
             make_move(computer_symbol, board, computer_row, computer_field)
             finished = check_if_finished(board, computer_symbol, player_symbol, finished)
 
         elif side == "player":
-            print("Player move")
             draw_board(board_data)
             player_row, player_column = print_move_menu(board)
             make_move(player_symbol, board, player_row, player_column)
@@ -221,8 +223,19 @@ while True:
                 else:
                     continue
 
-        if_again = int(input("If you want to play again enter 1, otherwise enter 0: "))
-        if if_again == 1:
-            restart = True
-        else:
-            exit()
+        correct = False
+
+        while not correct:
+            try:
+                if_again = int(input("If you want to play again enter 1, otherwise enter 0: "))
+
+                if if_again == 1:
+                    restart = True
+                    correct = True
+                elif if_again == 0:
+                    exit()
+                else:
+                    print("Entered value is not a number, enter 0 or 1")
+
+            except ValueError:
+                print("Wrong number, enter 0 or 1")
